@@ -9,6 +9,7 @@ SRC += src/core/util.c
 SRC += src/core/fs.c
 SRC += src/core/map.c
 SRC += src/core/zip.c
+SRC += src/core/gpu_vk.c
 
 # modules
 SRC_@(AUDIO) += src/modules/audio/audio.c
