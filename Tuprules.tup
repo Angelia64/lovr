@@ -67,7 +67,6 @@ endif
 ifeq ($(PLATFORM),win32)
   win32 = y
   SUFFIX = .exe
-  CFLAGS += -DLOVR_GL
   CFLAGS += -D_CRT_SECURE_NO_WARNINGS
   CFLAGS += -Wno-language-extension-token
   LDFLAGS += -lShell32 -lOle32
@@ -80,7 +79,7 @@ endif
 ifeq ($(PLATFORM),linux)
   linux = y
   CFLAGS += -D_POSIX_C_SOURCE=200809L
-  CFLAGS += -DLOVR_GL
+  CFLAGS += -DLOVR_LINUX_X11
   LDFLAGS += -lm -lpthread -ldl
   LDFLAGS += -Wl,-rpath,\$ORIGIN
   LDFLAGS_@(OPTIMIZE) += -Wl,--gc-sections
@@ -90,7 +89,6 @@ endif
 ifeq ($(PLATFORM),macosx)
   macos = y
   PLATFORM = macos
-  CFLAGS += -DLOVR_GL
   LDFLAGS += -Wl,-rpath,@executable_path
   LDFLAGS_@(OPTIMIZE) += -Wl,-dead_strip
   LDFLAGS += -lobjc
@@ -114,7 +112,6 @@ ifeq ($(PLATFORM),android)
   endif
 
   CC = @(ANDROID_NDK)/toolchains/llvm/prebuilt/$(HOST)/bin/clang
-  CFLAGS += -DLOVR_GLES
   CFLAGS += -I@(ANDROID_NDK)/sources/android/native_app_glue
   FLAGS += --target=aarch64-linux-android@(ANDROID_VERSION)
   FLAGS_@(DEBUG) += -funwind-tables
@@ -175,7 +172,6 @@ endif
 ifeq ($(PLATFORM),web)
   web = y
   SUFFIX = .html
-  CFLAGS += -DLOVR_WEBGL
   LDFLAGS += -s USE_WEBGL2
   LDFLAGS += -s FORCE_FILESYSTEM
   LDFLAGS += -s EXPORTED_FUNCTIONS="['_main','_lovrDestroy','_webxr_attach','_webxr_detach','_lovrCanvasCreateFromHandle','_lovrCanvasDestroy','_lovrGraphicsSetBackbuffer','_lovrGraphicsSetViewMatrix','_lovrGraphicsSetProjection']"
@@ -185,6 +181,14 @@ ifeq ($(PLATFORM),web)
   EXTRAS = bin/lovr.js bin/lovr.wasm
   EXTRAS_@(THREAD) += bin/lovr.worker.js
 endif
+
+## Graphics backends
+CFLAGS_@(OPENGL)_$(win32) += -DLOVR_GL
+CFLAGS_@(OPENGL)_$(linux) += -DLOVR_GL
+CFLAGS_@(OPENGL)_$(macos) += -DLOVR_GL
+CFLAGS_@(OPENGL)_$(android) += -DLOVR_GLES
+CFLAGS_@(OPENGL)_$(web) += -DLOVR_WEBGL
+CFLAGS_@(VULKAN) += -DLOVR_VK
 
 ## Libraries
 ifneq (@(CMAKE_DEPS),)
